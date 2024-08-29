@@ -36,7 +36,7 @@ then
 	rediscnf='/etc/redis.conf'
 fi
 
-if echo $os|grep -E '^Debian' >/dev/null
+if echo $os|grep -E '^Astra' >/dev/null
 then
 	mycnf='/etc/mysql/conf.d/z9_bitrix.cnf'
 	phpini='/etc/php/8.2/fpm/conf.d/z9_bitrix.ini'
@@ -549,20 +549,20 @@ then
 fi
 
 
-if echo $os|grep -Eo 'Debian' >/dev/null
+if echo $os|grep -Eo 'Astra' >/dev/null
 then
 	apt update
 	apt-get install -y software-properties-common apt-transport-https debconf-utils lsb-release gnupg gnupg2 debian-archive-keyring pwgen make build-essential wget curl
-	type=$(lsb_release -is|tr '[A-Z]' '[a-z]')
-	release=$(lsb_release -sc|tr '[A-Z]' '[a-z]')
-	mkdir -p /etc/apt/keyrings
-	curl -o /etc/apt/keyrings/mariadb-keyring.pgp 'https://mariadb.org/mariadb_release_signing_key.pgp'
-	echo "deb [signed-by=/etc/apt/keyrings/mariadb-keyring.pgp] https://mirror.docker.ru/mariadb/repo/11.3/$type $release main" > /etc/apt/sources.list.d/mariadb.list
-	wget -q -O - https://nginx.org/keys/nginx_signing.key | gpg --dearmor | tee /usr/share/keyrings/nginx-archive-keyring.gpg >/dev/null
-	gpg --dry-run --quiet --no-keyring --import --import-options import-show /usr/share/keyrings/nginx-archive-keyring.gpg
-	cat <<-EOF > /etc/apt/sources.list.d/nginx.list
-		deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/${type}/ ${release} nginx
-	EOF
+#	type=$(lsb_release -is|tr '[A-Z]' '[a-z]')
+#	release=$(lsb_release -sc|tr '[A-Z]' '[a-z]')
+#	mkdir -p /etc/apt/keyrings
+#	curl -o /etc/apt/keyrings/mariadb-keyring.pgp 'https://mariadb.org/mariadb_release_signing_key.pgp'
+#	echo "deb [signed-by=/etc/apt/keyrings/mariadb-keyring.pgp] https://mirror.docker.ru/mariadb/repo/11.3/$type $release main" > /etc/apt/sources.list.d/mariadb.list
+#	wget -q -O - https://nginx.org/keys/nginx_signing.key | gpg --dearmor | tee /usr/share/keyrings/nginx-archive-keyring.gpg >/dev/null
+#	gpg --dry-run --quiet --no-keyring --import --import-options import-show /usr/share/keyrings/nginx-archive-keyring.gpg
+#	cat <<-EOF > /etc/apt/sources.list.d/nginx.list
+#		deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/${type}/ ${release} nginx
+#	EOF
 	export DEBIAN_FRONTEND="noninteractive"
 	debconf-set-selections <<< "mariadb-server mysql-server/root_password password ${mypwd}"
 	debconf-set-selections <<< "mariadb-server mysql-server/root_password_again password ${mypwd}"
