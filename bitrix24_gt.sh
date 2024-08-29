@@ -582,8 +582,8 @@ then
 	ip=$(wget -qO- "https://ipinfo.io/ip")
 	mariadb -e "create database bitrix;create user bitrix@localhost;grant all on bitrix.* to bitrix@localhost;set password for bitrix@localhost = PASSWORD('${mypwddb}')"
 	nfTabl
-	dplRedis
-	dplPush
+#	dplRedis
+#	dplPush
 
   cd /var/www/html || exit
 	# wget -qO- http://rep.fvds.ru/cms/bitrixstable.tgz|tar -zxp
@@ -601,7 +601,8 @@ then
 	a2enmod proxy_fcgi
 	ln -s /var/log/apache2 /etc/apache2/logs
 	echo 'Listen 127.0.0.1:8888' > /etc/apache2/ports.conf
-	apacheCnf >> /etc/apache2/apache2.conf
+ 	apacheCnf >> /etc/apache2/apache2.conf
+  	echo 'AstraMode off' >> /etc/apache2/apache2.conf
 	rm /etc/apache2/bx/conf/bx_apache_site_name_port.conf
 
 	mv -f ./nginx/* /etc/nginx/
