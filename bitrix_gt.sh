@@ -34,7 +34,7 @@ then
 	croncnf='/etc/cron.d/bitrixagent'
 fi
 
-if echo $os|grep -E '^Debian' >/dev/null
+if echo $os|grep -E '^Astra' >/dev/null
 then
 	mycnf='/etc/mysql/conf.d/z9_bitrix.cnf'
 	phpini='/etc/php/8.2/fpm/conf.d/z9_bitrix.ini'
@@ -330,32 +330,32 @@ apacheCnf() {
 EOF
 }
 
-if echo $os|grep -Eo 'Debian' >/dev/null
+if echo $os|grep -Eo 'Astra' >/dev/null
 then
 	apt update
-	apt-get install -y software-properties-common apt-transport-https debconf-utils curl lsb-release gnupg gnupg2 debian-archive-keyring
-	type=$(lsb_release -is|tr '[A-Z]' '[a-z]')
-	release=$(lsb_release -sc|tr '[A-Z]' '[a-z]')
-	mkdir -p /etc/apt/keyrings
-	curl -o /etc/apt/keyrings/mariadb-keyring.pgp 'https://mariadb.org/mariadb_release_signing_key.pgp'
-	echo "deb [signed-by=/etc/apt/keyrings/mariadb-keyring.pgp] https://mirror.docker.ru/mariadb/repo/11.3/$type $release main" > /etc/apt/sources.list.d/mariadb.list
-	wget -q -O - https://nginx.org/keys/nginx_signing.key | gpg --dearmor | tee /usr/share/keyrings/nginx-archive-keyring.gpg >/dev/null
-	gpg --dry-run --quiet --no-keyring --import --import-options import-show /usr/share/keyrings/nginx-archive-keyring.gpg
-	cat <<-EOF > /etc/apt/sources.list.d/nginx.list
-		deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/${type}/ ${release} nginx
-	EOF
+#	apt-get install -y software-properties-common apt-transport-https debconf-utils curl lsb-release gnupg gnupg2 debian-archive-keyring
+#	type=$(lsb_release -is|tr '[A-Z]' '[a-z]')
+#	release=$(lsb_release -sc|tr '[A-Z]' '[a-z]')
+#	mkdir -p /etc/apt/keyrings
+#	curl -o /etc/apt/keyrings/mariadb-keyring.pgp 'https://mariadb.org/mariadb_release_signing_key.pgp'
+#	echo "deb [signed-by=/etc/apt/keyrings/mariadb-keyring.pgp] https://mirror.docker.ru/mariadb/repo/11.3/$type $release main" > /etc/apt/sources.list.d/mariadb.list
+#	wget -q -O - https://nginx.org/keys/nginx_signing.key | gpg --dearmor | tee /usr/share/keyrings/nginx-archive-keyring.gpg >/dev/null
+#	gpg --dry-run --quiet --no-keyring --import --import-options import-show /usr/share/keyrings/nginx-archive-keyring.gpg
+#	cat <<-EOF > /etc/apt/sources.list.d/nginx.list
+#		deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/${type}/ ${release} nginx
+#	EOF
 	export DEBIAN_FRONTEND="noninteractive"
 	debconf-set-selections <<< "mariadb-server mysql-server/root_password password ${mypwd}"
 	debconf-set-selections <<< "mariadb-server mysql-server/root_password_again password ${mypwd}"
 	debconf-set-selections <<< 'exim4-config exim4/dc_eximconfig_configtype select internet site; mail is sent and received directly using SMTP'
 	echo -e "[client]\npassword=${mypwd}" > /root/.my.cnf
 
-	wget -qO /etc/apt/trusted.gpg.d/php.gpg https://ftp.mpi-inf.mpg.de/mirrors/linux/mirror/deb.sury.org/repositories/php/apt.gpg
-	echo "deb https://ftp.mpi-inf.mpg.de/mirrors/linux/mirror/deb.sury.org/repositories/php ${release} main" > /etc/apt/sources.list.d/php8.2.list
-	apt update
+#	wget -qO /etc/apt/trusted.gpg.d/php.gpg https://ftp.mpi-inf.mpg.de/mirrors/linux/mirror/deb.sury.org/repositories/php/apt.gpg
+#	echo "deb https://ftp.mpi-inf.mpg.de/mirrors/linux/mirror/deb.sury.org/repositories/php ${release} main" > /etc/apt/sources.list.d/php8.2.list
+#	apt update
 	apt install -y php8.2-opcache php8.2-mysqli php8.2-fpm php8.2-gd php8.2-curl php8.2-xml php8.2-mbstring mariadb-server mysql-common mariadb-client nginx catdoc exim4 exim4-config apache2 libapache2-mod-rpaf nftables
-	sed -i "s/dc_eximconfig_configtype='local'/dc_eximconfig_configtype='internet'/" /etc/exim4/update-exim4.conf.conf && dpkg-reconfigure --frontend noninteractive exim4-config
-	ip=$(wget -qO- "https://ipinfo.io/ip")
+#	sed -i "s/dc_eximconfig_configtype='local'/dc_eximconfig_configtype='internet'/" /etc/exim4/update-exim4.conf.conf && dpkg-reconfigure --frontend noninteractive exim4-config
+#	ip=$(wget -qO- "https://ipinfo.io/ip")
 	mariadb -e "create database bitrix;create user bitrix@localhost;grant all on bitrix.* to bitrix@localhost;set password for bitrix@localhost = PASSWORD('${mypwddb}')"
 	nfTabl
 
